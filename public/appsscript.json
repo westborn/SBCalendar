@@ -1,0 +1,10 @@
+{
+  "timeZone": "Australia/Sydney",
+  "dependencies": {},
+  "webapp": {
+    "access": "DOMAIN",
+    "executeAs": "USER_DEPLOYING"
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}
