@@ -1,14 +1,14 @@
 <script>
-  import { createEventDispatcher } from "svelte";
-  import { fly, fade } from "svelte/transition";
-  import Button from "./Button.svelte";
+  import { createEventDispatcher } from 'svelte'
+  import { fly, fade } from 'svelte/transition'
+  import Button from './Button.svelte'
 
-  export let title;
+  export let title
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher()
 
   function closeModal() {
-    dispatch("cancel");
+    dispatch('cancel')
   }
 </script>
 
@@ -26,42 +26,32 @@
   .modal {
     position: fixed;
     top: 10vh;
-    left: 10%;
-    width: 80%;
-    max-height: 80vh;
+    left: 20%;
+    max-width: 80%;
     background: white;
     border-radius: 5px;
     z-index: 100;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-    overflow: scroll;
+    overflow: hidden;
   }
 
-  h1 {
+  h3 {
     padding: 1rem;
     margin: 0;
-    border-bottom: 1px solid #ccc;
-    font-family: "Roboto Slab", sans-serif;
   }
 
   .content {
-    padding: 1rem;
+    padding: 0 1rem;
   }
 
   footer {
     padding: 1rem;
   }
-
-  @media (min-width: 768px) {
-    .modal {
-      width: 40rem;
-      left: calc(50% - 20rem);
-    }
-  }
 </style>
 
 <div transition:fade class="modal-backdrop" on:click={closeModal} />
 <div transition:fly={{ y: 300 }} class="modal">
-  <h1>{title}</h1>
+  <h3>{title}</h3>
   <div class="content">
     <slot />
   </div>

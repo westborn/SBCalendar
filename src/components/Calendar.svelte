@@ -5,25 +5,9 @@
   import volunteers from '../store/volunteer-store.js'
   import database from '../store/database-store.js'
 
-  const dispatch = createEventDispatcher()
+  import { fmtDateTimeLocal } from '../Utils/Utils.js'
 
-  // weekday: 'short',
-  // month: 'short',
-  // day: 'numeric',
-  // year: 'numeric',
-  // hour: 'numeric',
-  // minute: '2-digit',
-  // second: '2-digit',
-  // hour12: true,
-  function fmtDateTimeLocal(
-    dte = new Date(),
-    options = {
-      month: 'short',
-      day: 'numeric'
-    }
-  ) {
-    return new Date(dte).toLocaleString('en-AU', options)
-  }
+  const dispatch = createEventDispatcher()
 
   function getTask(taskId) {
     const activity = $activities.find(el => taskId === el.taskId)
@@ -38,7 +22,6 @@
           endTime: '1899-12-29T22:00:00.000Z'
         }
   }
-
   function getVolunteer(id) {
     const vollie = $volunteers.find(el => id === el.id)
     return vollie
@@ -55,16 +38,18 @@
           activity2020: ''
         }
   }
-
-  function getVolunteerName(id) {
+  function getVolunteerName(id, surnameFirst = false) {
     const { firstName, lastName } = getVolunteer(id)
-    return `${firstName} ${lastName}`
+    return surnameFirst ? `${lastName}, ${firstName}` : `${firstName} ${lastName}`
   }
+
   function eventEdit(e, dbrow) {
-    console.log('from cal', dbrow)
     dispatch('edit', dbrow)
   }
+
   $: dates = [...new Set($database.map(item => item.date))]
+
+  let y
 </script>
 
 <style>
@@ -114,6 +99,8 @@
   }
 </style>
 
+<svelte:window bind:scrollY={y} />
+
 <div class="calendar">
   {#each dates as day}
     <div class="calendar-card">
@@ -122,7 +109,7 @@
       </h3>
       <p class="calendar-card-p">
         {#each $database.filter(item => item.date === day) as dbrow}
-          <div class="calendar-card-info" on:dblclick={e => eventEdit(e, dbrow)}>
+          <div class="calendar-card-info" on:click={e => eventEdit(e, dbrow)}>
             <span class="calendar-span-left">{getTask(dbrow.taskId).taskDescription}</span>
             <span class="calendar-span-right">{getVolunteerName(dbrow.volunteerId)}</span>
             <br />

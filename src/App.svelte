@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
 
-  import { VOLUNTEERS, ACTIVITIES, DATABASE } from './DATA.js'
+  import { VOLUNTEERS, ACTIVITIES, DATABASE } from './SECRET/DATA.js'
   import activities from './store/activity-store.js'
   import volunteers from './store/volunteer-store.js'
   import database from './store/database-store.js'
@@ -51,7 +51,6 @@
   function handleEdit({ detail: dbrow }) {
     // function handleEdit(dbrow) {
     taskToEdit = dbrow
-    console.log(dbrow)
     showModal = true
   }
   function cancelEdit() {
@@ -60,6 +59,11 @@
 
   function clearError() {
     error = null
+  }
+
+  function updateTask(e) {
+    console.log('updateTask', JSON.stringify(e, null, 2))
+    showModal = false
   }
 
   let taskToEdit = {}
@@ -85,7 +89,7 @@
   {#if loading}
     <LoadingSpinner />
   {:else if showModal}
-    <TaskEdit {taskToEdit} on:cancel={cancelEdit} />
+    <TaskEdit {taskToEdit} on:cancel={cancelEdit} on:addVollieToTask={e => updateTask(e.detail)} />
   {:else}
     <Calendar on:edit={handleEdit} />
   {/if}

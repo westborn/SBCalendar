@@ -1,23 +1,26 @@
 <script>
-  export let type = "button";
-  export let href = null;
-  export let mode = null;
-  export let color = null;
-  export let disabled = false;
+  export let variant = null
+  export let disabled = false
 </script>
 
 <style>
-  button,
-  a {
-    font: inherit;
-    border: 1px solid #cf0056;
-    background: #cf0056;
-    padding: 0.5rem 1rem;
-    color: white;
-    border-radius: 5px;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.26);
+  button {
+    background-color: transparent;
+    color: var(--light-color);
+    background-color: var(--primary-color);
+    border: 2px solid var(--border-color);
+    border-radius: 0.6em;
+    border-width: 2px;
     cursor: pointer;
+    align-self: center;
+    font: inherit;
+    font-size: 0.8rem;
+    margin: 0.5rem;
+    padding: 0.5em;
     text-decoration: none;
+    text-align: center;
+    font-family: inherit;
+    font-weight: 500;
   }
 
   button:focus {
@@ -25,12 +28,10 @@
   }
 
   button:hover,
-  button:active,
-  a:hover,
-  a:active {
-    background: #e40763;
-    border-color: #e40763;
-    box-shadow: 1px 1px 8px rgba(77, 51, 51, 0.26);
+  button:active {
+    color: var(--dark-color);
+    font-weight: 700;
+    border: 2px solid var(--primary-color);
   }
 
   button:disabled,
@@ -43,26 +44,15 @@
     cursor: not-allowed;
   }
 
-  .success {
-    background: #01a129;
-    border-color: #01a129;
-  }
-
-  .success:hover,
-  .success:active {
-    background: #1ac745;
-    border-color: #1ac745;
-  }
-
   .outline {
     background: transparent;
-    color: #cf0056;
+    color: var(--dark-color);
     box-shadow: none;
   }
 
   .outline:hover,
   .outline:active {
-    background: #ffc7de;
+    background: var(--light-color);
     box-shadow: none;
   }
 
@@ -73,23 +63,21 @@
     color: #ccc;
   }
 
-  .outline.success {
-    border-color: #01a129;
-    color: #01a129;
+  .danger {
+    color: var(--danger-color);
+    background-color: var(--light-color);
+    border-color: var(--danger-color);
   }
 
-  .outline.success:hover,
-  .outline.success:active {
-    background: #c2ffd1;
+  .danger:hover,
+  .danger:active {
+    color: var(--border-color);
+    background: var(--danger-color);
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
   }
 </style>
 
-{#if href}
-  <a {href}>
-    <slot />
-  </a>
-{:else}
-  <button class="{mode} {color}" {type} on:click {disabled}>
-    <slot />
-  </button>
-{/if}
+<button class={variant} type="button" on:click {disabled}>
+  <slot />
+</button>

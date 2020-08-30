@@ -7,3 +7,21 @@ export function isValidEmail(val) {
     "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
   ).test(val)
 }
+
+// weekday: 'short',
+// month: 'short',
+// day: 'numeric',
+// year: 'numeric',
+// hour: 'numeric',
+// minute: '2-digit',
+// second: '2-digit',
+// hour12: true,
+export function fmtDateTimeLocal(
+  dte = new Date(),
+  options = {
+    month: 'short',
+    day: 'numeric',
+  }
+) {
+  return new Date(dte).toLocaleString('en-AU', options)
+}

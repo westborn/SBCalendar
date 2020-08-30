@@ -52,7 +52,7 @@ textarea {
   border-bottom: 1px solid #555;
   background: transparent;
   width: 100%;
-  padding: 8px 0 5px 0;
+  padding: 1em 0 0.3em 0;
   color: var(--dark-color);
 }
 .input-field select {
@@ -60,7 +60,7 @@ textarea {
   border-bottom: 1px solid #555;
   background: transparent;
   width: 100%;
-  padding: 8px 0 5px 0;
+  padding: 1.7em 0 0.3em 0;
   color: var(--dark-color);
 }
 
