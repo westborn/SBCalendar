@@ -1,9 +1,9 @@
 <script>
-    import Modal from './Modal.svelte';
+  import Modal from './Modal.svelte'
 
-    export let message;
+  export let message
 </script>
 
 <Modal title="An error occurred!" on:cancel>
-    <p>{message}</p>
+  <p>{message}</p>
 </Modal>
