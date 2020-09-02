@@ -45,79 +45,88 @@
           activity2020: ''
         }
   }
-  function getVolunteerName(id, surnameFirst = false) {
+  function makeVollieName(id, surnameFirst = false) {
+    if (id === '999-VH') {
+      return ''
+    }
     const { firstName, lastName } = getVolunteer(id)
     return surnameFirst ? `${lastName}, ${firstName}` : `${firstName} ${lastName}`
   }
 
-  function addVollieToTask() {
-    if (theseTasks.vollies.find(vollie => vollie === selectedVollieId)) {
-      selectedVollieId = ''
-    } else {
-      theseTasks.vollies.push(selectedVollieId)
-      dispatch('addVollieToTask', theseTasks)
-    }
-  }
-
-  function deleteTask() {
-    // fetch(`https://svelte-course.firebaseio.com/meetups/${id}.json`, {
-    //   method: "DELETE"
-    // })
-    //   .then(res => {
-    //     if (!res.ok) {
-    //       throw new Error("An error occurred, please try again!");
-    //     }
-    //     meetups.removeMeetup(id);
-    //   })
-    //   .catch(err => console.log(err));
-    dispatch('remove')
-  }
-
-  function cancel() {
-    dispatch('cancel')
-  }
-
-  function setUpdate(task) {
-    const dayTask = $database.filter(
-      item => item.date === taskToEdit.date && item.taskId === taskToEdit.taskId
+  function setUpdate(taskToUpdate) {
+    const selectedDBEntry = $database.filter(
+      item =>
+        new Date(item.date).getTime() === new Date(taskToUpdate.date).getTime() &&
+        item.taskId === taskToUpdate.taskId
     )
-    if (!dayTask) {
+    if (!selectedDBEntry) {
       return { date: null, taskId: null, vollies: [] }
     }
-    const taskObj = dayTask.reduce(
+    const taskObject = selectedDBEntry.reduce(
       (acc, cur) => {
         if (cur.volunteerId !== '999-VH') {
           acc.vollies.push(cur.volunteerId)
         }
         return acc
       },
-      { date: taskToEdit.date, taskId: taskToEdit.taskId, vollies: [] }
+      { date: taskToUpdate.date, taskId: taskToUpdate.taskId, vollies: [] }
     )
-    if (taskObj.vollies.length > 0) {
+    if (taskObject.vollies.length > 0) {
       volliesAlreadyAssinged = true
     } else {
       volliesAlreadyAssinged = false
     }
-    if (taskObj.vollies.length >= 1) {
+    if (taskObject.vollies.length >= 1) {
       allowDeleteAll = true
     } else {
       allowDeleteAll = false
     }
-    return taskObj
+    return taskObject
   }
 
-  function trashVollie(vollieId) {
-    console.log('trash', vollieId)
+  function replaceTask() {
+    // ignore if they selected the same vollie who is already assigned
+    if (taskBeingUpdated.vollies.find(vollie => vollie === selectedVollieId)) {
+      selectedVollieId = ''
+    } else {
+      taskBeingUpdated.vollies.push(selectedVollieId)
+      dispatch('replaceTask', taskBeingUpdated)
+    }
   }
-  function removeAll() {
-    console.log('trashVollieAll')
+
+  function removeOneVollie(vollieId) {
+    console.log(
+      `removeOneVollie: ${taskBeingUpdated.date} - ${taskBeingUpdated.taskId} : ${taskBeingUpdated.vollies} => ${vollieId}`
+    )
+    const remainingVollies = taskBeingUpdated.vollies.filter(item => item !== vollieId)
+    if (remainingVollies.length === 0) {
+      removeAllVollies()
+      return
+    } else {
+      taskBeingUpdated.vollies = remainingVollies
+      dispatch('replaceTask', taskBeingUpdated)
+      return
+    }
+  }
+
+  function removeAllVollies() {
+    console.log(
+      `removeAllVollies: ${taskBeingUpdated.date} - ${taskBeingUpdated.taskId} : ${taskBeingUpdated.vollies}`
+    )
+    // replace the task with an entry of the "Placeholder Volunteer"
+    taskBeingUpdated.vollies = ['999-VH']
+    dispatch('replaceTask', taskBeingUpdated)
+    return
+  }
+
+  function cancel() {
+    dispatch('cancel')
   }
 
   let allowDeleteAll
   let volliesAlreadyAssinged
-  // let selectedVollieId = taskToEdit.volunteerId
   let selectedVollieId = ''
-  let theseTasks = setUpdate(taskToEdit)
+  let taskBeingUpdated = setUpdate(taskToEdit)
 
   let volliesSorted = $volunteers
     .map(item => {
@@ -130,14 +139,15 @@
   $: vollie = selectedVollieId
   $: vollieValid = !isEmpty(vollie)
   $: formIsValid = vollieValid
-  $: task = getTask(theseTasks.taskId).taskDescription
-  $: date = fmtDateTimeLocal(theseTasks.date, { weekday: 'short', day: 'numeric', month: 'short' })
+  $: task = getTask(taskBeingUpdated.taskId).taskDescription
+  $: date = fmtDateTimeLocal(taskBeingUpdated.date, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short'
+  })
 </script>
 
 <style>
-  form {
-    width: 100%;
-  }
   .vollies-assigned {
     display: grid;
     margin: 0;
@@ -160,17 +170,11 @@
   }
 </style>
 
-<!-- get all with same date and task
-if > 1 - mark all with delete button and allow add
-if 1 and id = VH-999 allow add
-if 1 - mark with delete and allow add
-if 0 - error -->
-
 <Modal title="{date} - {task}" on:cancel>
   {#if volliesAlreadyAssinged}
     <div class="vollies-assigned">
       <span>Currently Assigned:</span>
-      {#each theseTasks.vollies as vollie}
+      {#each taskBeingUpdated.vollies as vollie}
         <span>
           <svg
             version="1.1"
@@ -201,10 +205,10 @@ if 0 - error -->
                 y="0"
                 width="42"
                 height="42"
-                on:click={() => trashVollie(vollie)} />
+                on:click={() => removeOneVollie(vollie)} />
             </g>
           </svg>
-          {getVolunteerName(vollie)}
+          {makeVollieName(vollie)}
         </span>
       {/each}
     </div>
@@ -215,16 +219,16 @@ if 0 - error -->
     <select id="vollie-select" bind:value={selectedVollieId}>
       <option value="" />
       {#each volliesSorted as item (item.id)}
-        <option value={item.id}>{getVolunteerName(item.id, true)}</option>
+        <option value={item.id}>{makeVollieName(item.id, true)}</option>
       {/each}
     </select>
   </div>
 
   <div slot="footer">
     <Button variant="outline" on:click={cancel}>Cancel</Button>
-    <Button on:click={addVollieToTask} disabled={!formIsValid}>Save</Button>
+    <Button on:click={replaceTask} disabled={!formIsValid}>Save</Button>
     {#if allowDeleteAll}
-      <Button variant="danger" on:click={removeAll}>Delete ALL Vollies</Button>
+      <Button variant="danger" on:click={removeAllVollies}>Delete ALL Vollies</Button>
     {/if}
   </div>
 </Modal>

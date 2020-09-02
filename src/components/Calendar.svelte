@@ -39,17 +39,14 @@
         }
   }
   function getVolunteerName(id, surnameFirst = false) {
+    if (id === '999-VH') {
+      return ''
+    }
     const { firstName, lastName } = getVolunteer(id)
     return surnameFirst ? `${lastName}, ${firstName}` : `${firstName} ${lastName}`
   }
 
-  function eventEdit(e, dbrow) {
-    dispatch('edit', dbrow)
-  }
-
   $: dates = [...new Set($database.map(item => item.date))]
-
-  let y
 </script>
 
 <style>
@@ -99,8 +96,6 @@
   }
 </style>
 
-<svelte:window bind:scrollY={y} />
-
 <div class="calendar">
   {#each dates as day}
     <div class="calendar-card">
@@ -109,7 +104,7 @@
       </h3>
       <p class="calendar-card-p">
         {#each $database.filter(item => item.date === day) as dbrow}
-          <div class="calendar-card-info" on:click={e => eventEdit(e, dbrow)}>
+          <div class="calendar-card-info" on:click={() => dispatch('edit', dbrow)}>
             <span class="calendar-span-left">{getTask(dbrow.taskId).taskDescription}</span>
             <span class="calendar-span-right">{getVolunteerName(dbrow.volunteerId)}</span>
             <br />

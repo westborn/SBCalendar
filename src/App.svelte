@@ -12,7 +12,7 @@
   import LoadingSpinner from './UI/LoadingSpinner.svelte'
   import Error from './UI/Error.svelte'
 
-  const LOCAL = true
+  const LOCAL = false
 
   onMount(() => {
     if (LOCAL) {
@@ -25,16 +25,13 @@
       console.log('SPREADSHEET')
       google.script.run
         .withSuccessHandler(populateArray)
-        // .withSuccessHandler(populateVolunteers)
         .withUserObject(volunteers.setVolunteers)
         .getSheet('volunteers')
       google.script.run
-        // .withSuccessHandler(populateActivities)
         .withSuccessHandler(populateArray)
         .withUserObject(activities.setActivities)
         .getSheet('activities')
       google.script.run
-        // .withSuccessHandler(populateDatabase)
         .withSuccessHandler(populateArray)
         .withUserObject(database.setDatabase)
         .getSheet('database')
@@ -48,12 +45,14 @@
     }
   }
 
-  function handleEdit({ detail: dbrow }) {
-    // function handleEdit(dbrow) {
+  function doEditTask({ detail: dbrow }) {
+    // remember where we are - used after any editing
     taskToEdit = dbrow
+    yPos = y
     showModal = true
   }
   function cancelEdit() {
+    requestAnimationFrame(() => window.scrollTo(0, yPos))
     showModal = false
   }
 
@@ -61,11 +60,24 @@
     error = null
   }
 
-  function updateTask(e) {
-    console.log('updateTask', JSON.stringify(e, null, 2))
+  function updateTask({ date, taskId, vollies } = taskObj) {
+    console.log('updateTask' + date + taskId + vollies.join(' '))
+    loading = true
+    google.script.run.withSuccessHandler(UpdateTaskComplete).updateDBTask(date, taskId, vollies)
+  }
+
+  function UpdateTaskComplete(res) {
+    const { status, data } = JSON.parse(res)
+    console.log(status)
+    console.log(data)
+    database.setDatabase(data)
+    requestAnimationFrame(() => window.scrollTo(0, yPos))
+    loading = false
     showModal = false
   }
 
+  let y
+  let yPos = 0
   let taskToEdit = {}
   let loading = true
   let showModal = false
@@ -79,6 +91,8 @@
   }
 </style>
 
+<svelte:window bind:scrollY={y} />
+
 <div class="container">
 
   <h2>Sculpture Bermagui - Volunteer Management</h2>
@@ -89,9 +103,9 @@
   {#if loading}
     <LoadingSpinner />
   {:else if showModal}
-    <TaskEdit {taskToEdit} on:cancel={cancelEdit} on:addVollieToTask={e => updateTask(e.detail)} />
+    <TaskEdit {taskToEdit} on:cancel={cancelEdit} on:replaceTask={e => updateTask(e.detail)} />
   {:else}
-    <Calendar on:edit={handleEdit} />
+    <Calendar on:edit={doEditTask} />
   {/if}
 
 </div>
