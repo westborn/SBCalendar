@@ -15,16 +15,6 @@ function getSheet(sheetName) {
   return JSON.stringify(dataObj)
 }
 
-function getData() {
-  console.log('getdata')
-  return 'GetData'
-}
-
-function getSheetTest() {
-  const res = JSON.parse(getSheet('volunteers'))
-  console.log(JSON.stringify(res, null, 2))
-}
-
 function updateDBTask(dte, taskId, vollies) {
   // console.log(`updateTask: ${dte} - ${taskId} - ${vollies.join(' ')}`)
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Database')

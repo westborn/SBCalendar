@@ -1,6 +1,7 @@
 {
   "timeZone": "Australia/Sydney",
-  "dependencies": {},
+  "dependencies": {
+  },
   "webapp": {
     "access": "DOMAIN",
     "executeAs": "USER_DEPLOYING"

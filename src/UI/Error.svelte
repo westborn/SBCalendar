@@ -1,6 +1,5 @@
 <script>
   import Modal from './Modal.svelte'
-
   export let message
 </script>
 

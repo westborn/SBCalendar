@@ -12,7 +12,7 @@
   import LoadingSpinner from './UI/LoadingSpinner.svelte'
   import Error from './UI/Error.svelte'
 
-  const LOCAL = false
+  const LOCAL = true
 
   onMount(() => {
     if (LOCAL) {
@@ -61,15 +61,15 @@
   }
 
   function updateTask({ date, taskId, vollies } = taskObj) {
-    console.log('updateTask' + date + taskId + vollies.join(' '))
+    // console.log('updateTask' + date + taskId + vollies.join(' '))
     loading = true
     google.script.run.withSuccessHandler(UpdateTaskComplete).updateDBTask(date, taskId, vollies)
   }
 
   function UpdateTaskComplete(res) {
     const { status, data } = JSON.parse(res)
-    console.log(status)
-    console.log(data)
+    // console.log(status)
+    // console.log(data)
     database.setDatabase(data)
     requestAnimationFrame(() => window.scrollTo(0, yPos))
     loading = false

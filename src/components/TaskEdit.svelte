@@ -95,9 +95,9 @@
   }
 
   function removeOneVollie(vollieId) {
-    console.log(
-      `removeOneVollie: ${taskBeingUpdated.date} - ${taskBeingUpdated.taskId} : ${taskBeingUpdated.vollies} => ${vollieId}`
-    )
+    // console.log(
+    //   `removeOneVollie: ${taskBeingUpdated.date} - ${taskBeingUpdated.taskId} : ${taskBeingUpdated.vollies} => ${vollieId}`
+    // )
     const remainingVollies = taskBeingUpdated.vollies.filter(item => item !== vollieId)
     if (remainingVollies.length === 0) {
       removeAllVollies()
@@ -110,9 +110,9 @@
   }
 
   function removeAllVollies() {
-    console.log(
-      `removeAllVollies: ${taskBeingUpdated.date} - ${taskBeingUpdated.taskId} : ${taskBeingUpdated.vollies}`
-    )
+    // console.log(
+    //   `removeAllVollies: ${taskBeingUpdated.date} - ${taskBeingUpdated.taskId} : ${taskBeingUpdated.vollies}`
+    // )
     // replace the task with an entry of the "Placeholder Volunteer"
     taskBeingUpdated.vollies = ['999-VH']
     dispatch('replaceTask', taskBeingUpdated)
